@@ -8,27 +8,39 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+console.log('ENV CHECK:', {
+  PORT: process.env.PORT,
+  HAS_SESSION_SECRET: !!process.env.SESSION_SECRET,
+  HAS_GOOGLE_CLIENT_ID: !!process.env.GOOGLE_CLIENT_ID,
+  HAS_GEMINI_KEY: !!process.env.GEMINI_API_KEY,
+  FRONTEND_URL: process.env.FRONTEND_URL,
+});
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: process.env.FRONTEND_URL || '*',
   credentials: true
 }));
+
 app.use(express.json());
+
 app.use(session({
-  secret: process.env.SESSION_SECRET!,
+  secret: process.env.SESSION_SECRET || 'fallback-secret-change-this',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+  cookie: { 
+    secure: false,
+    maxAge: 24 * 60 * 60 * 1000 
+  }
 }));
 
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', message: 'Otto backend is running' });
+  res.json({ status: 'ok', message: 'Nexus backend is running' });
 });
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Load routes with error catching
 try {
   const authRoutes = require('./routes/auth').default;
   app.use('/auth', authRoutes);
@@ -62,5 +74,5 @@ try {
 }
 
 app.listen(PORT, () => {
-  console.log(`🚀 Backend running on http://localhost:${PORT}`);
+  console.log(`🚀 Backend running on port ${PORT}`);
 });
