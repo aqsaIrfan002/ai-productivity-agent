@@ -24,6 +24,15 @@ app.use(session({
   cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
 }));
 
+//Health check
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: 'Backend is running' });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 app.use('/auth', authRoutes);
 app.use('/agent', agentRoutes);
 app.use('/email', emailRoutes);
