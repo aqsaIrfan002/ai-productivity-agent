@@ -1,3 +1,11 @@
+process.on('uncaughtException', (err) => {
+  console.error('💥 UNCAUGHT EXCEPTION:', err);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('💥 UNHANDLED REJECTION:', reason);
+});
+
 import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
@@ -16,29 +24,34 @@ console.log('ENV CHECK:', {
   FRONTEND_URL: process.env.FRONTEND_URL,
 });
 
+// Health check BEFORE cors and session — Railway hits this to verify app is alive
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
+  origin: [
+    process.env.FRONTEND_URL || '',
+    'http://localhost:3000',
+    'https://ai-productivity-agent-frontend.vercel.app'
+  ],
   credentials: true
 }));
 
 app.use(express.json());
 
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'fallback-secret-change-this',
+  secret: process.env.SESSION_SECRET || 'fallback-secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { 
+  cookie: {
     secure: false,
-    maxAge: 24 * 60 * 60 * 1000 
+    maxAge: 24 * 60 * 60 * 1000
   }
 }));
 
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', message: 'Nexus backend is running' });
-});
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ status: 'ok', message: 'Otto backend is running' });
 });
 
 try {
