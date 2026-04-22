@@ -1,8 +1,5 @@
 import { Router, Request, Response } from 'express';
 import { google } from 'googleapis';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const router = Router();
 

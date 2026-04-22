@@ -10,6 +10,10 @@ import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
 import dotenv from 'dotenv';
+import authRoutes from './routes/auth';
+import agentRoutes from './routes/agent';
+import emailRoutes from './routes/email';
+import calendarRoutes from './routes/calendar';
 
 dotenv.config();
 
@@ -24,7 +28,7 @@ console.log('ENV CHECK:', {
   FRONTEND_URL: process.env.FRONTEND_URL,
 });
 
-// Health check BEFORE cors and session — Railway hits this to verify app is alive
+// Health check
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
@@ -54,37 +58,10 @@ app.get('/', (req, res) => {
   res.json({ status: 'ok', message: 'Otto backend is running' });
 });
 
-try {
-  const authRoutes = require('./routes/auth').default;
-  app.use('/auth', authRoutes);
-  console.log('✅ Auth routes loaded');
-} catch (e) {
-  console.error('❌ Auth routes failed:', e);
-}
-
-try {
-  const agentRoutes = require('./routes/agent').default;
-  app.use('/agent', agentRoutes);
-  console.log('✅ Agent routes loaded');
-} catch (e) {
-  console.error('❌ Agent routes failed:', e);
-}
-
-try {
-  const emailRoutes = require('./routes/email').default;
-  app.use('/email', emailRoutes);
-  console.log('✅ Email routes loaded');
-} catch (e) {
-  console.error('❌ Email routes failed:', e);
-}
-
-try {
-  const calendarRoutes = require('./routes/calendar').default;
-  app.use('/calendar', calendarRoutes);
-  console.log('✅ Calendar routes loaded');
-} catch (e) {
-  console.error('❌ Calendar routes failed:', e);
-}
+app.use('/auth', authRoutes);
+app.use('/agent', agentRoutes);
+app.use('/email', emailRoutes);
+app.use('/calendar', calendarRoutes);
 
 app.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`🚀 Server is strictly listening on 0.0.0.0:${PORT}`);
