@@ -44,13 +44,18 @@ app.use(cors({
 
 app.use(express.json());
 
+app.set('trust proxy', 1);
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'fallback-secret',
+  secret: process.env.SESSION_SECRET || 'vOYA7fz90s2iFyjZcnCjoOJC0duWMQ8t',
   resave: false,
   saveUninitialized: false,
+  proxy: true, 
   cookie: {
-    secure: false,
-    maxAge: 24 * 60 * 60 * 1000
+    secure: true,     
+    sameSite: 'none', 
+    httpOnly: true,    
+    maxAge: 24 * 60 * 60 * 1000 
   }
 }));
 
